@@ -3,7 +3,7 @@ package org.maciejmarczak.lioc.container;
 import java.util.HashMap;
 import java.util.Map;
 
-public class BeansContainerImpl implements BeansContainer {
+public final class BeansContainerImpl implements BeansContainer {
 
     private final Map<Class<?>, Object> beans = new HashMap<>();
 
