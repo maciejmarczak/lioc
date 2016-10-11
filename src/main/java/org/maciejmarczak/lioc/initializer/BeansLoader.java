@@ -16,7 +16,7 @@ import java.util.stream.Collectors;
 
 class BeansLoader {
 
-    private static int checkAndAddClass(BeansContainer beansContainer, String name, String basePackage) {
+    private static int loadAnnotatedClass(BeansContainer beansContainer, String name, String basePackage) {
         int loadedBeans = 0;
 
         try {
@@ -46,7 +46,7 @@ class BeansLoader {
                     if (bean != null) {
                         finalParams[i] = bean;
                     } else {
-                        loadedBeans += checkAndAddClass(beansContainer, paramTypes[i].getSimpleName(),
+                        loadedBeans += loadAnnotatedClass(beansContainer, paramTypes[i].getSimpleName(),
                                 paramTypes[i].getPackage().getName());
                     }
                 }
@@ -63,7 +63,7 @@ class BeansLoader {
         return loadedBeans;
     }
 
-    private static int fillContainerFromPath(BeansContainer beansContainer, String path, String basePackage) {
+    private static int loadFromPath(BeansContainer beansContainer, String path, String basePackage) {
         File root = new File(path);
         File[] rootFiles = root.listFiles();
 
@@ -75,13 +75,13 @@ class BeansLoader {
 
         for (File file : rootFiles) {
             if (file.isDirectory()) {
-                loadedBeans += fillContainerFromPath(beansContainer, file.getPath(),
+                loadedBeans += loadFromPath(beansContainer, file.getPath(),
                         basePackage + "." + file.getName());
                 continue;
             }
 
             if (file.getName().endsWith(".class")) {
-                loadedBeans += checkAndAddClass(beansContainer, file.getName().replaceAll("\\.class", ""), basePackage);
+                loadedBeans += loadAnnotatedClass(beansContainer, file.getName().replaceAll("\\.class", ""), basePackage);
             }
         }
 
@@ -99,7 +99,7 @@ class BeansLoader {
                 String path = roots.nextElement().getPath();
                 path += basePackage.replaceAll("\\.", File.separator);
 
-                loadedBeans += fillContainerFromPath(beansContainer, path, basePackage);
+                loadedBeans += loadFromPath(beansContainer, path, basePackage);
             }
 
         } catch (IOException ioe) {
